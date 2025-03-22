@@ -1,6 +1,11 @@
-from app import app
+from flask import render_template, Blueprint
 
 
-@app.route("/")
+root_bp = Blueprint("root", __name__)
+
+
+@root_bp.route("/")
 def index():
-    return "<h1>Learning Flask</h1>"
+    return render_template(
+        template_name_or_list="index.html", title="Home", username="Shadaab Karim"
+    )
