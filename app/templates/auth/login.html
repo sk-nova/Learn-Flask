@@ -1,0 +1,31 @@
+{% extends "layouts/_base.html" %}
+
+{% block title %}Login{% endblock %}
+
+{% block content %}
+    <div class="login-form">
+        <form method="post" novalidate>
+            {{ form.hidden_tag() }}
+            <p>
+                {{ form.username.label }}<br>
+                {{ form.username(size=32) }}
+                {% for error in form.username.errors %}
+                    <span style="color: red;">[{{ error }}]</span>
+                {% endfor %}
+            </p>
+            <p>
+                {{ form.password.label }}<br>
+                {{ form.password(size=32) }}
+                {% for error in form.password.errors %}
+                    <span style="color: red;">[{{ error }}]</span>
+                {% endfor %}
+            </p>
+            <p>{{ form.remember_me() }} {{ form.remember_me.label }}</p>
+            <p>{{ form.submit() }}</p>
+
+            <br>
+
+            <p>New User? <a href="{{ url_for('root.register') }}">Click to Register!</a></p>
+        </form>
+    </div>
+{% endblock %}

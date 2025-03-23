@@ -6,8 +6,31 @@
     <title>{% block title %}{% endblock %} - Flask</title>
 </head>
 <body>
-    <div>Microblog: <a href="{{ url_for('root.index') }}">Home</a></div>
+    <div>Microblog: 
+        <a href="{{ url_for('root.index') }}">Home</a>
+        {% if current_user.is_anonymous %}
+        <a href="{{ url_for('root.login') }}">Login</a>
+        <a href="{{ url_for('root.register') }}">Register</a>
+        {% else %}
+        <a href="{{ url_for('root.dashboard') }}">Dashboard</a>
+        <a href="{{ url_for('root.logout') }}">Logout</a>
+        {% endif %}
+    </div>
+    
     <hr>
+    
+    <br>
+    {% with messages = get_flashed_messages() %}
+    {% if messages %}
+    <ul>
+        {% for message in messages %}
+        <li>{{ message }}</li>
+        {% endfor %}
+    </ul>
+    {% endif %}
+    {% endwith %}
+    <br>
+
     {% block content %}{% endblock %}
 </body>
 </html>
