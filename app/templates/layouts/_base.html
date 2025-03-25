@@ -13,6 +13,7 @@
         <a href="{{ url_for('root.register') }}">Register</a>
         {% else %}
         <a href="{{ url_for('root.dashboard') }}">Dashboard</a>
+        <a href="{{ url_for('root.user', username=current_user.username) }}">Profile</a>
         <a href="{{ url_for('root.logout') }}">Logout</a>
         {% endif %}
     </div>

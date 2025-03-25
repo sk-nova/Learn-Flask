@@ -1,9 +1,11 @@
-from flask import render_template, flash, redirect, url_for
+from datetime import datetime
+from flask import render_template, flash, redirect, url_for, request
 from flask import Blueprint
 from flask_login import current_user, login_user, logout_user, login_required
 
-from app.forms import LoginForm, RegistrationForm
+from app.forms import LoginForm, RegistrationForm, ProfileEditForm
 from app.models import User
+from app.extensions import db
 
 
 # Root Blueprint
@@ -83,3 +85,52 @@ def logout():
 @login_required
 def dashboard():
     return render_template("dashboard.html")
+
+
+# User Route
+@root_bp.route("/user/<string:username>")
+@login_required
+def user(username: str):
+    user = User.query.filter_by(username=username).first_or_404()
+
+    posts = [
+        {"author": user, "body": "Test post #1"},
+        {"author": user, "body": "Test post #2"},
+    ]
+    return render_template("user.html", user=user, posts=posts)
+
+
+# Edit Profile route
+@root_bp.route("/edit_profile", methods=["GET", "POST"])
+@login_required
+def edit_profile():
+    form = ProfileEditForm()
+
+    if form.validate_on_submit():
+
+        current_user.first_name = form.first_name.data
+        current_user.last_name = form.last_name.data
+        current_user.username = form.username.data
+        current_user.email = form.email.data
+        current_user.about_me = form.about_me.data
+
+        db.session.commit()
+
+        flash("Profile updated successfully")
+        return redirect(url_for("root.edit_profile"))
+
+    elif request.method == "GET":
+        form.first_name.data = current_user.first_name
+        form.last_name.data = current_user.last_name
+        form.username.data = current_user.username
+        form.email.data = current_user.email
+        form.about_me.data = current_user.about_me
+
+    return render_template("profile/edit.html", form=form)
+
+
+@root_bp.before_request
+def before_request():
+    if current_user.is_authenticated:
+        current_user.last_seen = datetime.now()
+        db.session.commit()
